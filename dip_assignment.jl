@@ -31,29 +31,67 @@ using PlutoUI
 # ╔═╡ 3a995b53-281a-4b6d-93b5-2859f20280c5
 filter( x -> contains(x, string), TestImages.remotefiles_dip3e) |> x -> foreach(println, x)
 
+# ╔═╡ df9b1284-ea5a-4741-8c0b-6b604ec0719a
+md"""
+## Intensity Transformations
+
+### Negative Transformation
+Formula: **s = L - 1 - r**
+
+### Log Transformation  
+Formula: **s = c · log(1 + r)**
+
+Maps a narrow range of dark input values to a wider range of output values. 
+Compresses bright values and expands dark values. 
+Ideal for images with a large dynamic range like Fourier spectrums where most values are too dark to see.
+- Higher **c** → stronger expansion of dark regions
+- Lower **c** → subtler effect
+
+### Gamma (Power Law) Transformation
+Formula: **s = c · rᵞ**
+
+Controls overall brightness and contrast using the exponent γ.
+- **γ < 1** → brightens the image, expands dark regions (used for dark/underexposed images)
+- **γ = 1** → no change
+- **γ > 1** → darkens the image, compresses bright regions (used for washed out images)
+
+"""
+
+# ╔═╡ 21c519a2-c0bb-40be-b069-8eaab3086714
+let
+	img = testimage_dip3e("Fig0304(a)(breast_digital_Xray).tif")
+	transformed = clamp.((1.0 .- img), 0.0, 1.0)
+	mosaicview(img, transformed, nrow=1, npadding=4, fillvalue=Gray(0.5))
+end
+
 # ╔═╡ 00de7179-116b-42b1-ad69-862313f70da9
-@bind γ Slider(0.1:0.1:5.0, default=1.0, show_value=true)
+md"""
+**γ** $(@bind γ Slider(0.1:0.1:5.0, default=1.0, show_value=true))
+
+**c** $(@bind c_gamma Slider(1:0.1:10, default=1, show_value=true))
+"""
 
 # ╔═╡ 2198ab6c-9477-4fd0-9237-9b20f3f6c212
 let
 	img         = testimage_dip3e("Fig0241(c)(einstein high contrast).tif")
 	gray_img    = Gray.(img)       
     arr         = Float64.(gray_img)
-    transformed = clamp.(arr .^ γ, 0.0, 1.0)
-
+    transformed = clamp.( c_gamma .* (arr .^ γ), 0.0, 1.0)
     mosaicview(gray_img, transformed; nrow=1, npad=4, fillvalue=Gray(0.5))
 end
 
 
 # ╔═╡ c7f7808e-a553-42b9-90b8-a6ba27fdbd41
-@bind c Slider(0.1:0.1:5.0, default=1, show_value=true)
+md"""
+**c** $(@bind c_log Slider(0.1:0.1:5.0, default=1, show_value=true))
+"""
 
 # ╔═╡ 90ca0009-44dc-47e2-8d48-6b63f1c6b784
 let
 	img = testimage_dip3e("Fig0305(a)(DFT_no_log)")
 	gray_img  = Gray.(img)       
     arr       = Float64.(gray_img)
-	log_transformed = Gray.(clamp.((c .* log.(1.0 .+ arr)), 0.0, 1.0))
+	log_transformed = Gray.(clamp.((c_log .* log.(1.0 .+ arr)), 0.0, 1.0))
 	mosaicview(gray_img, log_transformed, nrow=1, npad=4, fillvalue=Gray(0.4))
 end
 
@@ -1454,11 +1492,13 @@ version = "17.7.0+0"
 # ╠═1cb32135-ec94-4621-9ab4-8c14d625d004
 # ╠═c42e54b4-bce9-4a99-96e3-f5f2c82179d7
 # ╠═3a995b53-281a-4b6d-93b5-2859f20280c5
-# ╠═177b6015-6242-4b47-9e1e-06cfb20d8a5c
+# ╟─177b6015-6242-4b47-9e1e-06cfb20d8a5c
+# ╟─df9b1284-ea5a-4741-8c0b-6b604ec0719a
+# ╠═21c519a2-c0bb-40be-b069-8eaab3086714
 # ╠═2198ab6c-9477-4fd0-9237-9b20f3f6c212
-# ╠═00de7179-116b-42b1-ad69-862313f70da9
+# ╟─00de7179-116b-42b1-ad69-862313f70da9
 # ╠═90ca0009-44dc-47e2-8d48-6b63f1c6b784
-# ╠═c7f7808e-a553-42b9-90b8-a6ba27fdbd41
+# ╟─c7f7808e-a553-42b9-90b8-a6ba27fdbd41
 # ╠═3575025c-5b7e-4f49-9291-764a210f09ea
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
