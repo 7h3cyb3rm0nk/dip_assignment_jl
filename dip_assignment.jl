@@ -108,14 +108,11 @@ end
 md"""
 # Contrast Stretching
 
-Contrast stretching (also called normalization) is a simple intensity transformation that expands the range of intensity values in an image to span a desired range, typically [0, 1].
-
 ## Formula
 
 The transformation is:
 
 $$s = \frac{r - r_{min}}{r_{max} - r_{min}}$$
-
 Where:
 - ``r`` is the input pixel intensity
 - ``r_{min}`` and ``r_{max}`` are the minimum and maximum intensity values in the image
@@ -129,6 +126,86 @@ let
 	min_r, max_r = minimum(arr), maximum(arr)
 	stretched = (arr .- min_r) ./ (max_r - min_r)
 	mosaicview(img, stretched, nrow=1, npad=4, fillvalue=Gray(0.5))
+end
+
+
+# ╔═╡ fe175197-fff2-4937-ba86-d71a2cf42f19
+md"""
+# Thresholding
+"""
+
+# ╔═╡ 0b5bdd06-c9eb-413f-9bfb-368b41e287ba
+md"""
+**threshold_value**: $(@bind threshold Slider(0.0:0.1:1.0,default=0.5, show_value=true ))
+"""
+
+# ╔═╡ c2206524-53a3-459e-a581-ffc3b9c0f62e
+let
+	img = testimage_dip3e("Fig0312(a)(kidney).tif")
+	arr = float(img)
+	transformed = Gray{Float64}.(arr .> threshold)
+	mosaicview(img, transformed; nrow=1, npad=5, fillvalue=Gray(0.5))
+end
+
+# ╔═╡ 2296ad08-98e5-4da3-b9de-942f23a20b77
+md"""
+# Piecewise Linear Stretching
+
+
+
+## Control Points
+
+$$(0, 0) \rightarrow (r_1, s_1) \rightarrow (r_2, s_2) \rightarrow (1, 1)$$
+
+## Transformation
+
+$$s = \begin{cases}
+\dfrac{s_1}{r_1} \cdot r & 0 \leq r < r_1 \\\\
+\dfrac{s_2 - s_1}{r_2 - r_1} \cdot (r - r_1) + s_1 & r_1 \leq r < r_2 \\\\
+\dfrac{1 - s_2}{1 - r_2} \cdot (r - r_2) + s_2 & r_2 \leq r \leq 1
+\end{cases}$$
+
+## General Segment Formula (Point-Slope Form)
+
+$$s = \frac{y_2 - y_1}{x_2 - x_1} \cdot (r - x_1) + y_1$$
+
+## Slope of Each Segment
+
+$$m_1 = \frac{s_1}{r_1}, \quad m_2 = \frac{s_2 - s_1}{r_2 - r_1}, \quad m_3 = \frac{1 - s_2}{1 - r_2}$$
+
+
+"""
+
+# ╔═╡ 669dad7f-82f6-4798-8fc4-46626054da4d
+function piecewise_linear(r, r1, s1, r2, s2)
+    if r < r1 && r1 > 0.0
+        (s1 / r1) * r
+    elseif r < r2
+        ((s2 - s1) / (r2 - r1)) * (r - r1) + s1
+    elseif r2 < 1.0
+        ((1 - s2) / (1 - r2)) * (r - r2) + s2
+    else
+        s2   
+    end
+end
+
+# ╔═╡ 20a9c0b2-2552-496e-b765-604b59a5291e
+md"""
+**r1**: $(@bind r1 Slider(0.0:0.01:1.0, default=0.2, show_value=true))
+
+**s1**: $(@bind s1 Slider(0.0:0.01:1.0, default=0.0, show_value=true))
+
+**r2**: $(@bind r2 Slider(0.0:0.01:1.0, default=0.8, show_value=true))
+
+**s2**: $(@bind s2 Slider(0.0:0.01:1.0, default=1.0, show_value=true))
+"""
+
+# ╔═╡ 29ffd178-5550-402f-a6ce-4ca1261bbe78
+let
+	img = testimage_dip3e("Fig0312(a)(kidney).tif")
+	arr = float(img)
+	transformed = Gray{Float64}.(piecewise_linear.(arr, r1, s1, r2, s2))
+	mosaicview(img, transformed, nrow=1, npad=4, fillvalue=Gray(0.5))
 end
 
 
@@ -1538,5 +1615,12 @@ version = "17.7.0+0"
 # ╟─c7f7808e-a553-42b9-90b8-a6ba27fdbd41
 # ╟─3575025c-5b7e-4f49-9291-764a210f09ea
 # ╠═3c33bda9-711b-4899-b49b-26d8b537a33b
+# ╠═fe175197-fff2-4937-ba86-d71a2cf42f19
+# ╠═c2206524-53a3-459e-a581-ffc3b9c0f62e
+# ╟─0b5bdd06-c9eb-413f-9bfb-368b41e287ba
+# ╟─2296ad08-98e5-4da3-b9de-942f23a20b77
+# ╠═669dad7f-82f6-4798-8fc4-46626054da4d
+# ╠═29ffd178-5550-402f-a6ce-4ca1261bbe78
+# ╟─20a9c0b2-2552-496e-b765-604b59a5291e
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
