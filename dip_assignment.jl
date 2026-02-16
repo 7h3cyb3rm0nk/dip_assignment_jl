@@ -250,15 +250,92 @@ let
         bin = clamp(floor(Int, p * nbins), 1, nbins)
         cdf[bin]
     end
-	hist_equalized = generate_histogram(Gray{Float64}.(equalized), nbins)
+	hist_equalized = generate_histogram(equalized, nbins)
 
     p1 = plot(img, title="Original", axis=false, ticks=false)
-    p2 = bar(hist, title="Original Histogram", legend=false, color=:gray, xlabel="Intensity", ylabel="Count")
+    p2 = bar(hist, title="Original Histogram", bins=nbins, legend=false, color=:gray, xlabel="Intensity", ylabel="Count")
     p3 = plot(Gray{Float64}.(equalized), title="Equalized", axis=false, ticks=false)
-    p4 = bar(equalized, title="Equalized Histogram", legend=false, color=:gray, xlabel="Intensity", ylabel="Count")
+    p4 = bar(hist_equalized, title="Equalized Histogram", legend=false, color=:gray, xlabel="Intensity", ylabel="Count")
 
     plot(p1, p2, p3, p4, layout=(2,2), size=(800,600))
 end
+
+# ╔═╡ 8871b9cd-b79c-4937-8e0d-55c233d7a538
+md"""
+# Histogram Stretching
+"""
+
+# ╔═╡ 8ef0cb36-89e6-4077-a3a8-a00e4a055455
+let
+    img = testimage_dip3e("Fig0310(b)(washed_out_pollen_image).tif")
+    arr = float(img)
+    nbins = 256
+
+  
+    arr_vals = vec(channelview(arr))
+    min_val  = minimum(arr_vals)
+    max_val  = maximum(arr_vals)
+    stretched = (arr .- min_val) ./ (max_val - min_val)
+
+	hist = generate_histogram(img, nbins)
+	hist_eq = generate_histogram(stretched, nbins)
+
+    p1 = plot(img, title="Original", color=:grays, axis=false, ticks=false)
+    p2 = bar(hist, bins=nbins, title="Original Histogram", legend=false, color=:gray, xlabel="intensity", ylabel="count")
+    p3 = plot(Gray{Float32}.(stretched), title="Stretched", color=:grays, axis=false, ticks=false)
+    p4 = bar(hist_eq, bins=nbins, title="Stretched Histogram", legend=false, color=:gray, xlabel="intensity", ylabel="count")
+
+    plot(p1, p2, p3, p4, layout=(2,2), size=(800,600))
+end
+
+# ╔═╡ 2a90de17-c251-4d96-9227-010f5fdc4420
+function correlation(img, kernel)
+    arr = float(img)
+    rows, cols = size(arr)
+    kr, kc = size(kernel)
+    
+    # padding size
+    pr = kr ÷ 2
+    pc = kc ÷ 2
+    
+    # pad the image with zeros
+    padded = zeros(rows + 2pr, cols + 2pc)
+    padded[pr+1:pr+rows, pc+1:pc+cols] = channelview(arr)
+    
+    output = zeros(rows, cols)
+    
+    for i in 1:rows
+        for j in 1:cols
+            region = padded[i:i+kr-1, j:j+kc-1]
+            output[i,j] = sum(region .* kernel)
+        end
+    end
+    
+    Gray{Float64}.(clamp.(output, 0.0, 1.0))
+end
+
+# ╔═╡ 1ae5349a-9973-45b7-99e1-e2d04930cfdc
+function convolution(img, kernel)
+    flipped_kernel = kernel[end:-1:1, end:-1:1]
+    correlation(img, flipped_kernel)
+end
+
+# ╔═╡ 344d4a82-16aa-4c98-ba1f-8617c81bf860
+
+let
+	kernel = [
+		1 1 1;
+		1 -8 1;
+		1 1 1;
+	] .* -1
+    img = testimage_dip3e("Fig0338(a)(blurry_moon).tif")
+    result = convolution(img, kernel)
+	result = img .+ result
+    mosaicview(img, result; nrow=1, npad=5, fillvalue=Gray(0.5))
+end
+
+# ╔═╡ 0ad9b551-f342-4b18-97db-eae556fee9fd
+
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -2290,5 +2367,11 @@ version = "1.13.0+0"
 # ╠═b3b47028-42ac-42af-82b7-0232c3db680a
 # ╟─884767b5-fd38-4442-8aaa-8445f16099d9
 # ╠═95091ce3-b273-4f1e-a864-5ed386ba4bed
+# ╠═8871b9cd-b79c-4937-8e0d-55c233d7a538
+# ╠═8ef0cb36-89e6-4077-a3a8-a00e4a055455
+# ╟─2a90de17-c251-4d96-9227-010f5fdc4420
+# ╟─1ae5349a-9973-45b7-99e1-e2d04930cfdc
+# ╠═344d4a82-16aa-4c98-ba1f-8617c81bf860
+# ╠═0ad9b551-f342-4b18-97db-eae556fee9fd
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
