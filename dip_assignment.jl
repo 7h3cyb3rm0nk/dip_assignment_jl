@@ -34,6 +34,9 @@ using ImageFiltering
 # ╔═╡ 3daffb13-39f6-4916-ab13-681ce9e52789
 using Statistics
 
+# ╔═╡ 3e80902f-58c2-4c99-8bfe-567869a1165c
+using FFTW
+
 # ╔═╡ 909d955e-ec7b-4803-aab4-72d641b4012b
 md"""
 - run this command if these dependencies are not installed systemwide
@@ -543,9 +546,39 @@ let
 	
 end
 
+# ╔═╡ 48ccbf31-6ac9-4f2b-9a46-1de4c33b651a
+md"""
+# DFT calculation
+"""
+
+# ╔═╡ 25b5c7d7-6aaa-4f76-8af3-bf0074a1652a
+let
+	img = testimage("cameraman")
+	arr = float(img)
+	F = fft(channelview(float(img)))
+	F_shifted = fftshift(F)
+	spectrum = log.(1.0  .+ abs.(F_shifted))
+    spectrum = spectrum ./ maximum(spectrum)
+
+    p1 = heatmap(arr,title="Original",
+		color=:grays, axis=false, ticks=false,
+		yflip=true, aspect_ratio=1)
+	
+    p2 = heatmap(spectrum, title="Spectrum", 
+		color=:grays, axis=false, ticks=false,
+	    yflip=true, aspect_ratio=1)
+
+    plot(p1, p2; layout=(1,2), size=(800,400))
+end
+
+
+# ╔═╡ f1bc9249-d304-4751-9e2e-c04614a13f56
+
+
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
 [deps]
+FFTW = "7a1cc6ca-52ef-59f5-83cd-3a7055c09341"
 ImageFiltering = "6a3955dd-da59-5b1f-98d4-e7296123deb5"
 Images = "916415d5-f1e6-5110-898d-aaa5f9f070e0"
 Plots = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
@@ -554,6 +587,7 @@ Statistics = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
 TestImages = "5e47fb64-e119-507b-a336-dd2b206d9990"
 
 [compat]
+FFTW = "~1.10.0"
 ImageFiltering = "~0.7.12"
 Images = "~0.26.2"
 Plots = "~1.41.6"
@@ -567,7 +601,7 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.12.4"
 manifest_format = "2.0"
-project_hash = "39037e36cda1e3a1b865eed597f8345978330ae6"
+project_hash = "59121ac81f7965dcdda9f6c3f848eded8cd646e5"
 
 [[deps.AbstractFFTs]]
 deps = ["LinearAlgebra"]
@@ -2555,6 +2589,7 @@ version = "1.13.0+0"
 # ╠═88c3ef67-80ff-40cd-886a-25f60ad20783
 # ╠═dda79e31-e6ba-4bd4-9484-b250aaa27374
 # ╠═3daffb13-39f6-4916-ab13-681ce9e52789
+# ╠═3e80902f-58c2-4c99-8bfe-567869a1165c
 # ╠═3a995b53-281a-4b6d-93b5-2859f20280c5
 # ╟─177b6015-6242-4b47-9e1e-06cfb20d8a5c
 # ╟─8673d065-b606-42a0-8c9a-de05dc2ed6a7
@@ -2604,5 +2639,8 @@ version = "1.13.0+0"
 # ╠═fad0d6a7-5f7b-442a-ac6f-a1f05aafca0b
 # ╠═4bc093ae-6bd1-4aa1-b360-40bf6a549a40
 # ╠═5e0b6813-5066-4c7b-8a0d-00e9112cd2dc
+# ╠═48ccbf31-6ac9-4f2b-9a46-1de4c33b651a
+# ╠═25b5c7d7-6aaa-4f76-8af3-bf0074a1652a
+# ╠═f1bc9249-d304-4751-9e2e-c04614a13f56
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
