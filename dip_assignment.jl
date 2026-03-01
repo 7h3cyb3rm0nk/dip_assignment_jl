@@ -604,23 +604,25 @@ function ilpf_mask(rows, cols, cutoff)
     mask
 end
 
+# ╔═╡ eed40bdf-3605-412b-926c-1ebd5aff2f2b
+
+md"""
+**cutoff**: $(@bind cutoff_ilpf Slider(10:1:255, show_value=true))
+"""
+
 # ╔═╡ afbd7df2-9fdb-435f-bad8-f716315ded2d
 let 
-	img        = testimage("cameraman")
-    rows, cols = size(channelview(float(img)))
+	img         = testimage("cameraman")
+    rows, cols  = size(channelview(float(img)))
 
-    lpf_mask       = ilpf_mask(rows, cols, 30)
-    filtered   = freq_filter(img, lpf_mask)
+    lpf_mask    = ilpf_mask(rows, cols, cutoff_ilpf)
+    filtered    = freq_filter(img, lpf_mask)
 
-    s_orig     = Gray{Float64}.(spectrum(img))
-    s_filtered = Gray{Float64}.(spectrum(filtered))
+    s_orig      = Gray{Float64}.(spectrum(img))
+    s_filtered  = Gray{Float64}.(spectrum(filtered))
 
     mosaicview(img, filtered, s_orig, s_filtered; nrow=2, npad=5, fillvalue=Gray(0.5))
 end
-
-# ╔═╡ eed40bdf-3605-412b-926c-1ebd5aff2f2b
-
-
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
