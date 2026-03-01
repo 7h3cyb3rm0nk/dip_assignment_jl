@@ -553,7 +553,7 @@ md"""
 
 # ╔═╡ 25b5c7d7-6aaa-4f76-8af3-bf0074a1652a
 let
-	img = testimage("cameraman")
+	img = testimage_dip3e("Fig0338(a)(blurry_moon).tif")
 	arr = float(img)
 	F = fft(channelview(float(img)))
 	F_shifted = fftshift(F)
@@ -573,6 +573,53 @@ end
 
 
 # ╔═╡ f1bc9249-d304-4751-9e2e-c04614a13f56
+begin
+	function freq_filter(img, mask)
+		arr = channelview(float(img))
+		F          = fft(arr)           
+        F_shifted  = fftshift(F)         
+        F_filtered = F_shifted .* mask
+        result    = real.(ifft(ifftshift(F_filtered)))
+		result = (result .- minimum(result)) ./ (maximum(result) .- minimum(result))
+		Gray{Float64}.(result)
+	end
+
+	function spectrum(img)
+		arr = channelview(float(img))
+		F = fftshift(fft(arr))
+		s = log.(1.0 .+ abs.(F))
+		(s .- minimum(s)) ./ (maximum(s) - minimum(s))
+	end
+end
+	
+
+
+# ╔═╡ 74964926-8a16-41fb-802c-c5319ae58867
+function ilpf_mask(rows, cols, cutoff)
+    mask = zeros(rows, cols)
+    cx, cy = rows ÷ 2 + 1, cols ÷ 2 + 1
+    for i in 1:rows, j in 1:cols
+        mask[i,j] = sqrt((i-cx)^2 + (j-cy)^2) <= cutoff ? 1.0 : 0.0
+    end
+    mask
+end
+
+# ╔═╡ afbd7df2-9fdb-435f-bad8-f716315ded2d
+let 
+	img        = testimage("cameraman")
+    rows, cols = size(channelview(float(img)))
+
+    lpf_mask       = ilpf_mask(rows, cols, 30)
+    filtered   = freq_filter(img, lpf_mask)
+
+    s_orig     = Gray{Float64}.(spectrum(img))
+    s_filtered = Gray{Float64}.(spectrum(filtered))
+
+    mosaicview(img, filtered, s_orig, s_filtered; nrow=2, npad=5, fillvalue=Gray(0.5))
+end
+
+# ╔═╡ eed40bdf-3605-412b-926c-1ebd5aff2f2b
+
 
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
@@ -2639,8 +2686,11 @@ version = "1.13.0+0"
 # ╠═fad0d6a7-5f7b-442a-ac6f-a1f05aafca0b
 # ╠═4bc093ae-6bd1-4aa1-b360-40bf6a549a40
 # ╠═5e0b6813-5066-4c7b-8a0d-00e9112cd2dc
-# ╠═48ccbf31-6ac9-4f2b-9a46-1de4c33b651a
+# ╟─48ccbf31-6ac9-4f2b-9a46-1de4c33b651a
 # ╠═25b5c7d7-6aaa-4f76-8af3-bf0074a1652a
 # ╠═f1bc9249-d304-4751-9e2e-c04614a13f56
+# ╠═74964926-8a16-41fb-802c-c5319ae58867
+# ╠═afbd7df2-9fdb-435f-bad8-f716315ded2d
+# ╠═eed40bdf-3605-412b-926c-1ebd5aff2f2b
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
