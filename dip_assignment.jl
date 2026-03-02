@@ -594,6 +594,11 @@ end
 	
 
 
+# ╔═╡ 6c2dac11-02b9-4542-b86a-550b17fd3a83
+md"""
+# ILPF mask
+"""
+
 # ╔═╡ 74964926-8a16-41fb-802c-c5319ae58867
 function ilpf_mask(rows, cols, cutoff)
     mask = zeros(rows, cols)
@@ -607,7 +612,7 @@ end
 # ╔═╡ eed40bdf-3605-412b-926c-1ebd5aff2f2b
 
 md"""
-**cutoff**: $(@bind cutoff_ilpf Slider(10:1:255, show_value=true))
+**cutoff**: $(@bind cutoff_ilpf Slider(10:0.1:255, show_value=true))
 """
 
 # ╔═╡ afbd7df2-9fdb-435f-bad8-f716315ded2d
@@ -622,6 +627,90 @@ let
     s_filtered  = Gray{Float64}.(spectrum(filtered))
 
     mosaicview(img, filtered, s_orig, s_filtered; nrow=2, npad=5, fillvalue=Gray(0.5))
+end
+
+# ╔═╡ 3b4e9a1c-462c-4941-b0c8-f783668be36c
+md"""
+# Gaussian LPF mask
+"""
+
+# ╔═╡ 63051a54-f09a-4ad5-a597-8539ae96ad7f
+
+function glpf_mask(rows, cols, cutoff)
+
+	mask = zeros(rows, cols)
+	cx , cy = rows ÷ 2 +1, cols ÷ 2 + 1
+	for i in 1:rows
+		for j in 1:cols
+			∂x = sqrt((i -cx)^2 + (j - cy)^2)
+			exponent = ∂x^2 / (2*(cutoff^2))
+			mask[i, j] = exp(-exponent)
+		end
+	end
+	mask
+end
+	
+
+# ╔═╡ 93b1d179-788a-409c-b192-36e578accc02
+md"""
+**cutoff**: $(@bind cutoff_glpf Slider(10:0.1:255, show_value=true))
+"""
+
+# ╔═╡ afb4c220-27d7-4338-ae5c-36d150f0433e
+let 
+	img         = testimage("cameraman")
+    rows, cols  = size(channelview(float(img)))
+
+    lpf_mask    = glpf_mask(rows, cols, cutoff_glpf)
+    filtered    = freq_filter(img, lpf_mask)
+
+    s_orig      = Gray{Float64}.(spectrum(img))
+    s_filtered  = Gray{Float64}.(spectrum(filtered))
+	mosaicview(img, filtered, s_orig, s_filtered; nrow=2, npad=5,fillvalue=Gray(0.5))
+
+    
+end
+
+# ╔═╡ ef76bf16-6b77-4e5b-a191-daeee3b9b040
+md"""
+# Butterworth LPF
+"""
+
+# ╔═╡ 4c722414-5bbc-47ac-ac36-3af45eabc2d4
+function blpf_mask(rows, cols, cutoff, n)
+	cx, cy = rows ÷ 2 + 1, cols ÷ 2 + 1
+	mask = zeros(rows, cols)
+	for i in 1:rows
+		for j in 1:cols
+			∂x = sqrt((i-cx)^2 + (j-cy)^2)
+			denominator = 1+ ((∂x / cutoff)^(2*n))
+			mask[i, j] = 1 / denominator
+		end
+	end
+	mask
+end
+
+
+# ╔═╡ d3ad8dd1-5fee-4c87-a357-538f0542fec7
+md"""
+**cutoff**: $(@bind cutoff_blpf Slider(10:0.1:255, show_value=true))
+
+**n**: $(@bind blpf_n Slider(1:0.01:100, show_value=true))
+"""
+
+# ╔═╡ 41d3462d-eb07-4521-b620-e0dd344bd485
+let 
+	img         = testimage("cameraman")
+    rows, cols  = size(channelview(float(img)))
+
+    lpf_mask    = blpf_mask(rows, cols, cutoff_blpf, blpf_n)
+    filtered    = freq_filter(img, lpf_mask)
+
+    s_orig      = Gray{Float64}.(spectrum(img))
+    s_filtered  = Gray{Float64}.(spectrum(filtered))
+	mosaicview(img, filtered, s_orig, s_filtered; nrow=2, npad=5,fillvalue=Gray(0.5))
+
+    
 end
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
@@ -2691,8 +2780,17 @@ version = "1.13.0+0"
 # ╟─48ccbf31-6ac9-4f2b-9a46-1de4c33b651a
 # ╠═25b5c7d7-6aaa-4f76-8af3-bf0074a1652a
 # ╠═f1bc9249-d304-4751-9e2e-c04614a13f56
+# ╟─6c2dac11-02b9-4542-b86a-550b17fd3a83
 # ╠═74964926-8a16-41fb-802c-c5319ae58867
 # ╠═afbd7df2-9fdb-435f-bad8-f716315ded2d
 # ╠═eed40bdf-3605-412b-926c-1ebd5aff2f2b
+# ╟─3b4e9a1c-462c-4941-b0c8-f783668be36c
+# ╠═63051a54-f09a-4ad5-a597-8539ae96ad7f
+# ╠═afb4c220-27d7-4338-ae5c-36d150f0433e
+# ╟─93b1d179-788a-409c-b192-36e578accc02
+# ╟─ef76bf16-6b77-4e5b-a191-daeee3b9b040
+# ╠═4c722414-5bbc-47ac-ac36-3af45eabc2d4
+# ╠═41d3462d-eb07-4521-b620-e0dd344bd485
+# ╟─d3ad8dd1-5fee-4c87-a357-538f0542fec7
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
