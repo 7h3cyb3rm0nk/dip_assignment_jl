@@ -808,6 +808,69 @@ let
     mosaicview(img, filtered, s_orig, s_filtered; nrow=2, npad=5, fillvalue=Gray(0.5))
 end
 
+# ╔═╡ 4463dace-2b60-4b4e-8229-c7e59b1d4334
+md"""
+# DFT manual implementation
+
+## $$F(u,v) = \Sigma_{x=0}^{M-1}\Sigma_{y=0}^{N-1} \space f(x,y) \cdot ℯ^{-j2\pi(\frac{ux}{M} + \frac{vy}{N})}$$
+
+∀ u ∈ (𝟎, M-1) ⩓ ∀ v ∈ (𝟎, N-1)
+"""
+
+# ╔═╡ 509c39f9-21d9-443e-8234-77bc656661de
+begin
+function dft_zeropad(arr::Matrix)
+	M, N = size(arr)
+	padded = zeros(Float64, 2M, 2N)
+	padded[1:M, 1:N] = arr
+	return padded
+end
+	
+function dft(arr)
+	M, N = size(arr)
+	U, V = M, N
+	F = zeros(ComplexF64, M, N)
+	for u in 0:U-1
+		for v in 0:V-1
+			acc = ComplexF64(0)
+			for x in 0:M-1
+				for y in 0:N-1
+					θ = 2π*(u*x/M + v*y/N)
+					j = im
+					acc += arr[x+1, y+1] * exp(-j * θ)
+				end
+			end
+			F[u+1, v+1] = acc
+		end
+	end
+	F
+end
+
+function dftshift(F::Matrix)
+	M, N = size(F)
+	shifted = zeros(ComplexF64,M,N)
+	for u in 1:M
+		for v in 1:N
+			shifted[u, v] = F[u, v] * (-1)^((u-1 + v-1))
+		end
+	end
+	shifted
+end
+end		
+
+# ╔═╡ bc058843-3f4e-4d7d-be76-01a728b444ba
+let 
+	img = float(testimage("cameraman"))
+	img = img[1:32, 1:32] # due to resource constraint
+
+	padded = dft_zeropad(float(img))
+	F = dft(padded)
+	F_shifted = dftshift(F)
+	s = log.(1.0 .+ abs.(F_shifted))
+	Gray.(s .- minimum(s)) ./ (maximum(s) - minimum(s))
+	# Gray.(abs.(F_shifted))
+end
+
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
 [deps]
@@ -2899,5 +2962,8 @@ version = "1.13.0+0"
 # ╠═951a5d80-21bf-4a63-b6c2-0847cd85f1f5
 # ╠═fc6781d0-3781-4a63-9000-0cf2c515fddb
 # ╟─c6f2a61f-75ec-46c1-a5a0-879956c4f681
+# ╟─4463dace-2b60-4b4e-8229-c7e59b1d4334
+# ╠═509c39f9-21d9-443e-8234-77bc656661de
+# ╠═bc058843-3f4e-4d7d-be76-01a728b444ba
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
