@@ -775,6 +775,7 @@ let
     s_filtered  = Gray{Float64}.(spectrum(filtered))
 
     mosaicview(img, filtered, s_orig, s_filtered; nrow=2, npad=5, fillvalue=Gray(0.5))
+	
 end
 
 # ╔═╡ dadb3dda-33bf-4ca9-be82-540fff25eb3d
