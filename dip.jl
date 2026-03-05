@@ -49,13 +49,13 @@ Pkg.add(["Images", "TestImages", "PlutoUI", "Plots", "ImageFiltering"])
 
 
 # ╔═╡ 177b6015-6242-4b47-9e1e-06cfb20d8a5c
-@bind string TextField(placeholder="enter the search term")
+@bind string TextField(placeholder="search for your image here")
 
 # ╔═╡ 3a995b53-281a-4b6d-93b5-2859f20280c5
 filter( x -> contains(x, string), TestImages.remotefiles_dip3e) |> x -> foreach(println, x)
 
 # ╔═╡ 8673d065-b606-42a0-8c9a-de05dc2ed6a7
-md"# Negative Transformation"
+md"# 1. Negative Transformation"
 
 # ╔═╡ 21c519a2-c0bb-40be-b069-8eaab3086714
 let
@@ -65,13 +65,13 @@ let
 end
 
 # ╔═╡ 7f4e3ce2-3ef1-425a-a4f1-b3f01d7aa67a
-md"# Gamma Transformation"
+md"# 2. Gamma Transformation"
 
 # ╔═╡ 00de7179-116b-42b1-ad69-862313f70da9
 md"""
-**γ** $(@bind γ Slider(0.1:0.1:5.0, default=1.0, show_value=true))
+**γ** $(@bind γ Slider(0.1:0.1:5.0, default=2.0, show_value=true))
 
-**c** $(@bind c_gamma Slider(1:0.1:10, default=1, show_value=true))
+**c** $(@bind c_gamma Slider(1:0.1:10, default=1.6, show_value=true))
 """
 
 # ╔═╡ 2198ab6c-9477-4fd0-9237-9b20f3f6c212
@@ -85,11 +85,11 @@ end
 
 
 # ╔═╡ baf7937e-0da7-4d97-b5f7-a5e114208ff5
-md"# Log Transformation"
+md"# 3. Log Transformation"
 
 # ╔═╡ c7f7808e-a553-42b9-90b8-a6ba27fdbd41
 md"""
-**c** $(@bind c_log Slider(0.1:0.1:5.0, default=1, show_value=true))
+**c** $(@bind c_log Slider(0.1:0.1:5.0, default=3, show_value=true))
 """
 
 # ╔═╡ 90ca0009-44dc-47e2-8d48-6b63f1c6b784
@@ -103,7 +103,7 @@ end
 
 # ╔═╡ 3575025c-5b7e-4f49-9291-764a210f09ea
 md"""
-# Contrast Stretching
+# 4. Contrast Stretching
 """
 
 # ╔═╡ 3c33bda9-711b-4899-b49b-26d8b537a33b
@@ -118,7 +118,7 @@ end
 
 # ╔═╡ fe175197-fff2-4937-ba86-d71a2cf42f19
 md"""
-# Thresholding
+# 5. Thresholding
 """
 
 # ╔═╡ 0b5bdd06-c9eb-413f-9bfb-368b41e287ba
@@ -136,7 +136,7 @@ end
 
 # ╔═╡ 2296ad08-98e5-4da3-b9de-942f23a20b77
 md"""
-# Piecewise Linear Stretching
+# 6. Piecewise Linear Stretching
 
 
 
@@ -198,7 +198,7 @@ end
 
 # ╔═╡ d21e8d85-6398-42e6-87ed-193d32ba0288
 md"""
-# Histogram Stretching
+# 7. Histogram Stretching
 """
 
 # ╔═╡ b3b47028-42ac-42af-82b7-0232c3db680a
@@ -246,7 +246,7 @@ end
 
 # ╔═╡ 8871b9cd-b79c-4937-8e0d-55c233d7a538
 md"""
-# Histogram Stretching
+# 8. Histogram Equalization
 """
 
 # ╔═╡ 8ef0cb36-89e6-4077-a3a8-a00e4a055455
@@ -307,7 +307,7 @@ end
 
 # ╔═╡ 157898ac-eed0-4314-968e-fd909651c6c3
 md"""
-# Convolution and Correlation
+# 9. Convolution and Correlation
 """
 
 # ╔═╡ 344d4a82-16aa-4c98-ba1f-8617c81bf860
@@ -329,7 +329,7 @@ end
 
 # ╔═╡ 004e7f10-c0af-4d43-8102-6235bdc68412
 md"""
-# Smoothening Kernels
+# 10. Smoothening Kernels
 """
 
 # ╔═╡ c06adc8d-a628-4a65-ad6d-1f6e1c947e77
@@ -356,7 +356,7 @@ end
 
 # ╔═╡ d0d2111e-a929-4d53-aace-0e0832653d61
 md"""
-# Order Static Median Filtering
+# 11. Order Static Median Filtering
 """
 
 # ╔═╡ 9bfb466f-1d0e-49a7-869f-a6a1387e407f
@@ -394,7 +394,7 @@ end
 
 
 # ╔═╡ 22534f7e-0a2e-43ae-adaa-96da161f58fb
-md" # Max Filter"
+md" # 12. Max Filter"
 
 # ╔═╡ 53bd59ae-4c64-4ca4-ae1a-16cd0cd92c76
 function max_filter(img, kernel_size)
@@ -430,7 +430,7 @@ end
 
 
 # ╔═╡ 30a6b36c-9392-4db0-b891-7707d8e38ce8
-md" # Min Filtering"
+md" # 13. Min Filtering"
 
 # ╔═╡ 7759d73d-acc8-418e-ba92-c329a59f9512
 function min_filter(img, kernel_size)
@@ -467,7 +467,7 @@ end
 
 # ╔═╡ e6363873-9d5d-44df-b2f7-78fae6271a86
 md"""
-# Laplacian Filtering
+# 14. Laplacian Filtering
 """
 
 
@@ -497,7 +497,7 @@ end
 
 # ╔═╡ 4bc093ae-6bd1-4aa1-b360-40bf6a549a40
 md"""
-# First Order Derivative filtering (Sobel filter)
+# 15. First Order Derivative filtering (Sobel filter)
 """
 
 # ╔═╡ 5e0b6813-5066-4c7b-8a0d-00e9112cd2dc
@@ -548,7 +548,7 @@ end
 
 # ╔═╡ 48ccbf31-6ac9-4f2b-9a46-1de4c33b651a
 md"""
-# DFT calculation
+# 16. DFT calculation
 """
 
 # ╔═╡ 25b5c7d7-6aaa-4f76-8af3-bf0074a1652a
@@ -596,7 +596,7 @@ end
 
 # ╔═╡ 6c2dac11-02b9-4542-b86a-550b17fd3a83
 md"""
-# ILPF mask
+# 17. ILPF mask
 """
 
 # ╔═╡ 74964926-8a16-41fb-802c-c5319ae58867
@@ -631,7 +631,7 @@ end
 
 # ╔═╡ 3b4e9a1c-462c-4941-b0c8-f783668be36c
 md"""
-# Gaussian LPF mask
+# 18. Gaussian LPF mask
 """
 
 # ╔═╡ 63051a54-f09a-4ad5-a597-8539ae96ad7f
@@ -673,7 +673,7 @@ end
 
 # ╔═╡ ef76bf16-6b77-4e5b-a191-daeee3b9b040
 md"""
-# Butterworth LPF
+# 19. Butterworth LPF
 """
 
 # ╔═╡ 4c722414-5bbc-47ac-ac36-3af45eabc2d4
@@ -715,7 +715,7 @@ end
 
 # ╔═╡ ece43132-dd97-4055-a44a-b71296fdbe09
 md"""
-# ideal high pass filter
+# 20. ideal high pass filter
 """
 
 
@@ -747,7 +747,7 @@ end
 
 # ╔═╡ 6e571a47-4258-4f74-af6f-17901b901453
 md"""
-# Gaussian High Pass filter
+# 21. Gaussian High Pass filter
 """
 
 # ╔═╡ 5cc725f5-4cc5-48af-92ac-c87dcd357b52
@@ -779,7 +779,7 @@ let
 end
 
 # ╔═╡ dadb3dda-33bf-4ca9-be82-540fff25eb3d
-md" # butterworth high pass filter"
+md" # 22. butterworth high pass filter"
 
 # ╔═╡ 951a5d80-21bf-4a63-b6c2-0847cd85f1f5
 function bhpf_mask(rows,cols,cutoff, n)
@@ -811,7 +811,7 @@ end
 
 # ╔═╡ 4463dace-2b60-4b4e-8229-c7e59b1d4334
 md"""
-# DFT manual implementation
+# 23. DFT manual implementation
 
 ## $$F(u,v) = \Sigma_{x=0}^{M-1}\Sigma_{y=0}^{N-1} \space f(x,y) \cdot ℯ^{-j2\pi(\frac{ux}{M} + \frac{vy}{N})}$$
 
@@ -871,6 +871,9 @@ let
 	Gray.(s .- minimum(s)) ./ (maximum(s) - minimum(s))
 	# Gray.(abs.(F_shifted))
 end
+
+# ╔═╡ 4d72eecd-1103-4e69-b4a5-73756a939c82
+TableOfContents(depth=1)
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -2880,33 +2883,33 @@ version = "1.13.0+0"
 
 # ╔═╡ Cell order:
 # ╟─909d955e-ec7b-4803-aab4-72d641b4012b
-# ╠═714c7bd6-1547-11f1-b271-adfc1b18f476
-# ╠═1cb32135-ec94-4621-9ab4-8c14d625d004
-# ╠═c42e54b4-bce9-4a99-96e3-f5f2c82179d7
-# ╠═88c3ef67-80ff-40cd-886a-25f60ad20783
-# ╠═dda79e31-e6ba-4bd4-9484-b250aaa27374
-# ╠═3daffb13-39f6-4916-ab13-681ce9e52789
-# ╠═3e80902f-58c2-4c99-8bfe-567869a1165c
-# ╠═3a995b53-281a-4b6d-93b5-2859f20280c5
+# ╟─714c7bd6-1547-11f1-b271-adfc1b18f476
+# ╟─1cb32135-ec94-4621-9ab4-8c14d625d004
+# ╟─c42e54b4-bce9-4a99-96e3-f5f2c82179d7
+# ╟─88c3ef67-80ff-40cd-886a-25f60ad20783
+# ╟─dda79e31-e6ba-4bd4-9484-b250aaa27374
+# ╟─3daffb13-39f6-4916-ab13-681ce9e52789
+# ╟─3e80902f-58c2-4c99-8bfe-567869a1165c
+# ╟─3a995b53-281a-4b6d-93b5-2859f20280c5
 # ╟─177b6015-6242-4b47-9e1e-06cfb20d8a5c
 # ╟─8673d065-b606-42a0-8c9a-de05dc2ed6a7
 # ╠═21c519a2-c0bb-40be-b069-8eaab3086714
 # ╟─7f4e3ce2-3ef1-425a-a4f1-b3f01d7aa67a
 # ╠═2198ab6c-9477-4fd0-9237-9b20f3f6c212
-# ╠═00de7179-116b-42b1-ad69-862313f70da9
+# ╟─00de7179-116b-42b1-ad69-862313f70da9
 # ╟─baf7937e-0da7-4d97-b5f7-a5e114208ff5
 # ╠═90ca0009-44dc-47e2-8d48-6b63f1c6b784
 # ╟─c7f7808e-a553-42b9-90b8-a6ba27fdbd41
-# ╠═3575025c-5b7e-4f49-9291-764a210f09ea
+# ╟─3575025c-5b7e-4f49-9291-764a210f09ea
 # ╠═3c33bda9-711b-4899-b49b-26d8b537a33b
-# ╠═fe175197-fff2-4937-ba86-d71a2cf42f19
+# ╟─fe175197-fff2-4937-ba86-d71a2cf42f19
 # ╠═c2206524-53a3-459e-a581-ffc3b9c0f62e
 # ╟─0b5bdd06-c9eb-413f-9bfb-368b41e287ba
 # ╟─2296ad08-98e5-4da3-b9de-942f23a20b77
 # ╠═669dad7f-82f6-4798-8fc4-46626054da4d
 # ╠═29ffd178-5550-402f-a6ce-4ca1261bbe78
 # ╟─20a9c0b2-2552-496e-b765-604b59a5291e
-# ╠═d21e8d85-6398-42e6-87ed-193d32ba0288
+# ╟─d21e8d85-6398-42e6-87ed-193d32ba0288
 # ╠═b3b47028-42ac-42af-82b7-0232c3db680a
 # ╟─884767b5-fd38-4442-8aaa-8445f16099d9
 # ╠═95091ce3-b273-4f1e-a864-5ed386ba4bed
@@ -2942,7 +2945,7 @@ version = "1.13.0+0"
 # ╟─6c2dac11-02b9-4542-b86a-550b17fd3a83
 # ╠═74964926-8a16-41fb-802c-c5319ae58867
 # ╠═afbd7df2-9fdb-435f-bad8-f716315ded2d
-# ╠═eed40bdf-3605-412b-926c-1ebd5aff2f2b
+# ╟─eed40bdf-3605-412b-926c-1ebd5aff2f2b
 # ╟─3b4e9a1c-462c-4941-b0c8-f783668be36c
 # ╠═63051a54-f09a-4ad5-a597-8539ae96ad7f
 # ╠═afb4c220-27d7-4338-ae5c-36d150f0433e
@@ -2966,5 +2969,6 @@ version = "1.13.0+0"
 # ╟─4463dace-2b60-4b4e-8229-c7e59b1d4334
 # ╠═509c39f9-21d9-443e-8234-77bc656661de
 # ╠═bc058843-3f4e-4d7d-be76-01a728b444ba
+# ╟─4d72eecd-1103-4e69-b4a5-73756a939c82
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
